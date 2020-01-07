@@ -9,8 +9,9 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>testing</RootNamespace>
     <AssemblyName>testing</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -56,9 +57,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="EvaporationPipe.cs" />
-    <Compile Include="EvaporationPipeConfig.cs" />
-    <Compile Include="CondensationVentConfig.cs" />
+    <Compile Include="Vaporizer.cs" />
+    <Compile Include="VaporizerConfig.cs" />
+    <Compile Include="CondenserConfig.cs" />
     <Compile Include="AddBuilding.cs" />
     <Compile Include="testingPatchApply.cs" />
     <Compile Include="testingModInfo.cs" />

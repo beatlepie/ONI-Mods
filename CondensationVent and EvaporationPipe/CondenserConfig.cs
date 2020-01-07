@@ -5,19 +5,19 @@ using UnityEngine;
 
 namespace testing
 {
-    public class CondensationVentConfig : IBuildingConfig
+    public class CondenserConfig : IBuildingConfig
     {
         public static void Setup()
         {
-            AddBuilding.AddStrings("CondensationVent", "Condensation Vent", "Allows gases to condense out of the vent!", "Allows gases to condense out of the vent!!!");
-            AddBuilding.AddBuildingToPlanScreen("Utilities", "CondensationVent", "ThermalBlock");
-            AddBuilding.IntoTechTree("TemperatureModulation", "CondensationVent");
+            AddBuilding.AddStrings("Condenser", "Condenser", "Condenses its contents!", "Allows its content to condense!!!");
+            AddBuilding.AddBuildingToPlanScreen("Utilities", "Condenser", "ThermalBlock");
+            AddBuilding.IntoTechTree("TemperatureModulation", "Condenser");
         }
 
         //putting [f] at the end of the number makes the computer treat the number as [float] instead of defaulting to [double]
         public override BuildingDef CreateBuildingDef()
         {
-            string id = "CondensationVent";
+            string id = "Condenser";
             int width = 1, height = 1;
             string anim = "ventgas_kanim";
             int hitpoints = 10;
@@ -78,6 +78,6 @@ namespace testing
                 GameComps.StructureTemperatures.SetPayload(handle, ref payload);
             };
         }
-        public const string ID = "CondensationVent";
+        public const string ID = "Condenser";
     }
 }

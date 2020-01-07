@@ -13,8 +13,8 @@ namespace testing
         {
             public static void Prefix()
             {
-                CondensationVentConfig.Setup();
-                EvaporationPipeConfig.Setup();
+                CondenserConfig.Setup();
+                VaporizerConfig.Setup();
             }
         }
     }
