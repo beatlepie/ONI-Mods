@@ -53,30 +53,11 @@ namespace testing
         public Storage inputStorage;
         public Storage outputStorage;
 
-        public class StatesInstance : GameStateMachine<Vaporizer.States, Vaporizer.StatesInstance, Vaporizer, object>.GameInstance
+        public class StatesInstance : GameStateMachine<States, StatesInstance, Vaporizer, object>.GameInstance
         {
             public StatesInstance(Vaporizer smi) : base(smi)
             {
-                this.meter = new MeterController(base.gameObject.GetComponent<KBatchedAnimController>(), "meter_target", "meter", Meter.Offset.Infront, Grid.SceneLayer.NoLayer, new string[]
-                {
-                "meter_OL",
-                "meter_frame",
-                "meter_fill"
-                });
-                this.UpdateMeter();
-                base.Subscribe(-1697596308, new Action<object>(this.OnStorageChange));
             }
-
-            private void OnStorageChange(object data)
-            {
-                this.UpdateMeter();
-            }
-
-            public void UpdateMeter()
-            {
-                this.meter.SetPositionPercent(Mathf.Clamp01(base.smi.master.outputStorage.MassStored() / base.smi.master.outputStorage.Capacity()));
-            }
-
 
             public void UpdateIceState()
             {
@@ -91,35 +72,32 @@ namespace testing
                 }
                 base.sm.doneVaporizing.Set(value, this);
             }
-
-            private MeterController meter;
         }
 
-        public class States : GameStateMachine<Vaporizer.States, Vaporizer.StatesInstance, Vaporizer>
+        public class States : GameStateMachine<States, StatesInstance, Vaporizer>
         {
+            public State working;
+            public State output;
+            public State off;
+
             public override void InitializeStates(out StateMachine.BaseState default_state)
             {
-                default_state = this.off;
-                base.serializable = true;
-                //Changed GameHashes to OnStorageChange from OperationalChanged
-                this.off.PlayAnim("liquidconditioner_kanim").EventTransition(GameHashes.OnStorageChange, this.on, (Vaporizer.StatesInstance smi) => smi.master.operational.IsOperational);
-                this.on.PlayAnim("liquidconditioner_kanim").EventTransition(GameHashes.OnStorageChange, this.off, (Vaporizer.StatesInstance smi) => !smi.master.operational.IsOperational).DefaultState(this.on.waiting);
-                this.on.waiting.EventTransition(GameHashes.OnStorageChange, this.on.working_pre, (Vaporizer.StatesInstance smi) => smi.master.storageCheck());
-                this.on.working_pre.Enter(delegate (Vaporizer.StatesInstance smi)
-                {
-                    smi.UpdateIceState();
-                }).PlayAnim("liquidconditioner_kanim").OnAnimQueueComplete(this.on.working);
-                this.on.working.QueueAnim("liquidconditioner_kanim", true, null).Update("liquidconditioner_kanim", delegate (Vaporizer.StatesInstance smi, float dt)
-                {
-                    smi.master.MakeIce(smi, dt);
-                }, UpdateRate.SIM_200ms, false).ParamTransition<bool>(this.doneVaporizing, this.on.working_pst, GameStateMachine<Vaporizer.States, Vaporizer.StatesInstance, Vaporizer, object>.IsTrue).Enter(delegate (Vaporizer.StatesInstance smi)
-                {
-                    smi.master.operational.SetActive(true, false);
-                }).Exit(delegate (Vaporizer.StatesInstance smi)
-                {
-                    smi.master.operational.SetActive(false, false);
-                });
-                this.on.working_pst.Exit(new StateMachine<Vaporizer.States, Vaporizer.StatesInstance, Vaporizer, object>.State.Callback(this.DoTransfer)).PlayAnim("liquidconditioner_kanim").OnAnimQueueComplete(this.on);
+                default_state = off;
+
+                off
+                    .PlayAnim("liquidconditioner_kanim")
+                    .EventTransition(GameHashes.OperationalChanged, working, smi => smi.master.operational.IsOperational);
+
+                working
+                    .PlayAnim("liquidconditioner_kanim")
+                    .Enter(smi => smi.master.operational.SetActive(true))
+                    .Exit(smi => smi.master.operational.SetActive(false))
+                    .EventTransition(GameHashes.OnStorageChange, off, smi => smi.master.operational.IsOperational)
+                    .Update("liquidconditioner_kanim", (smi, dt) => { if (smi.master.storageCheck()) smi.GoTo(off); }, UpdateRate.SIM_200ms);
+
+                //output
+                //    .PlayAnim("liquidconditioner_kanim")
+                //    .EventTransition()
             }
 
             private void DoTransfer(Vaporizer.StatesInstance smi)
@@ -135,18 +113,6 @@ namespace testing
             }
 
             public StateMachine<Vaporizer.States, Vaporizer.StatesInstance, Vaporizer, object>.BoolParameter doneVaporizing;
-
-            public GameStateMachine<Vaporizer.States, Vaporizer.StatesInstance, Vaporizer, object>.State off;
-
-            public Vaporizer.States.OnStates on;
-
-            public class OnStates : GameStateMachine<Vaporizer.States, Vaporizer.StatesInstance, Vaporizer, object>.State
-            {
-                public GameStateMachine<Vaporizer.States, Vaporizer.StatesInstance, Vaporizer, object>.State waiting;
-                public GameStateMachine<Vaporizer.States, Vaporizer.StatesInstance, Vaporizer, object>.State working_pre;
-                public GameStateMachine<Vaporizer.States, Vaporizer.StatesInstance, Vaporizer, object>.State working;
-                public GameStateMachine<Vaporizer.States, Vaporizer.StatesInstance, Vaporizer, object>.State working_pst;
-            }
         }
     }
 }
