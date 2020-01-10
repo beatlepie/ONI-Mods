@@ -9,7 +9,7 @@ namespace testing
     {
         public static void Setup()
         {
-            AddBuilding.AddStrings("Vaporizer", "Vaporizer", "Allows liquid contents to vaporize!", "Allows liquid to vaporize!!!");
+            AddBuilding.AddStrings("Vaporizer", "Vaporizer", "Allows liquid contents to vaporize!", "Allows liquid to vaporize! Only takes liquids in if input pipe, output pipe, power are all connected!");
             AddBuilding.AddBuildingToPlanScreen("Utilities", "Vaporizer", "ThermalBlock");
             AddBuilding.IntoTechTree("TemperatureModulation", "Vaporizer");
         }
