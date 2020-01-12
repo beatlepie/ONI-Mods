@@ -9,7 +9,7 @@ namespace testing
     {
         public static void Setup()
         {
-            AddBuilding.AddStrings("Condenser", "Condenser", "Condenses its contents!", "Allows its content to condense!!!");
+            AddBuilding.AddStrings("Condenser", "Condenser", "Condenses its contents! Operates starting from 10kg of gas and maximum of 50kg, cools it until 5 degree below the condensation temperature. It heats itself by 16kDTU while it is running.", "Condenses its contents.");
             AddBuilding.AddBuildingToPlanScreen("Utilities", "Condenser", "ThermalBlock");
             AddBuilding.IntoTechTree("TemperatureModulation", "Condenser");
         }
@@ -18,28 +18,34 @@ namespace testing
         public override BuildingDef CreateBuildingDef()
         {
             string id = "Condenser";
-            int width = 1, height = 1;
-            string anim = "ventgas_kanim";
+            int width = 2, height = 2;
+            string anim = "liquidconditioner_kanim";
             int hitpoints = 10;
-            float construction_time = 10f;
-            float[] tier = BUILDINGS.CONSTRUCTION_MASS_KG.TIER2; //100kg
-            string[] RAW_METALS = MATERIALS.RAW_METALS;
+            float construction_time = 120f;
+            float[] tier = BUILDINGS.CONSTRUCTION_MASS_KG.TIER6; //1200kg
+            string[] ALL_METALS = MATERIALS.ALL_METALS;
             float melting_point = 1600f;
-            //THIS MIGHT CAUSE PROBLEMS!!!
-            BuildLocationRule build_location_rule = BuildLocationRule.NotInTiles; //Anywhere that is not blocked by tiles
+            BuildLocationRule build_location_rule = BuildLocationRule.OnFloor;
             EffectorValues tier2 = BUILDINGS.DECOR.PENALTY.TIER0;
-            EffectorValues tier3 = NOISE_POLLUTION.NOISY.TIER0;
-            BuildingDef buildingDef = BuildingTemplates.CreateBuildingDef(id, width, height, anim, hitpoints, construction_time, tier, RAW_METALS, melting_point, build_location_rule, tier2, tier3, 0.2f);
-            buildingDef.ThermalConductivity = 2f;
-            buildingDef.Overheatable = false;
+            EffectorValues noise = NOISE_POLLUTION.NOISY.TIER2;
+            BuildingDef buildingDef = BuildingTemplates.CreateBuildingDef(id, width, height, anim, hitpoints, construction_time, tier, ALL_METALS, melting_point, build_location_rule, tier2, noise, 0.2f);
+            buildingDef.Floodable = false;
+            buildingDef.Overheatable = true;
             buildingDef.Entombable = true;
-//            buildingDef.ViewMode = OverlayModes.GasConduits.ID;
-            //Layer the building is stored in, if it is [GasConduit], [GasConduit] objects cannot be place over them.
-            buildingDef.ObjectLayer = ObjectLayer.Backwall;
+            buildingDef.ViewMode = OverlayModes.GasConduits.ID;
+            buildingDef.PermittedRotations = PermittedRotations.FlipH;
+            buildingDef.OverheatTemperature = 398.15f;
+            buildingDef.EnergyConsumptionWhenActive = 1200f;
+            buildingDef.SelfHeatKilowattsWhenActive = 16f;
+            buildingDef.ExhaustKilowattsWhenActive = 4f;
+
+            //Layer the building is stored in, if it is [GasConduit], [GasConduit] objects cannot be place over them. Apparently unnecessasry...
+            //buildingDef.ObjectLayer = ObjectLayer.Backwall;
             buildingDef.AudioCategory = "Metal";
-            buildingDef.BaseTimeUntilRepair = -1f;
+            buildingDef.BaseTimeUntilRepair = -20f;
             buildingDef.UtilityInputOffset = new CellOffset(0, 0);
-            buildingDef.UtilityOutputOffset = new CellOffset(0, 0);
+            buildingDef.UtilityOutputOffset = new CellOffset(1, 0);
+            buildingDef.PowerInputOffset = new CellOffset(1, 0);
             buildingDef.SceneLayer = Grid.SceneLayer.Backwall;
             //adds the output sprite on the building!
             buildingDef.InputConduitType = ConduitType.Gas;
@@ -49,35 +55,54 @@ namespace testing
 
         public override void ConfigureBuildingTemplate(GameObject go, Tag prefab_tag)
         {
-            AnimTileable animTileable = go.AddOrGet<AnimTileable>();
-            animTileable.objectLayer = ObjectLayer.Backwall;
-            go.AddComponent<ZoneTile>();
-            BuildingConfigManager.Instance.IgnoreDefaultKComponent(typeof(RequiresFoundation), prefab_tag);
+            go.AddOrGet<LoopingSounds>();
+
+            Storage inputStorage = go.AddOrGet<Storage>();
+            inputStorage.SetDefaultStoredItemModifiers(Storage.StandardInsulatedStorage);
+            inputStorage.showInUI = true;
+            //seems like this value is for maximum the storage can hold...not take in...to change how much it can take in, change the [conduitConsumer.capacityKG]...
+            inputStorage.capacityKg = 50f;
+
+            Storage outputStorage = go.AddComponent<Storage>();
+            outputStorage.SetDefaultStoredItemModifiers(Storage.StandardInsulatedStorage);
+            outputStorage.showInUI = true;
+            //???????????????????????????????????????????????
+            //This seems to be ignored...
+            outputStorage.capacityKg = 50f;
+
+            Vaporizer vaporizer = go.AddOrGet<Vaporizer>();
+            vaporizer.SetStorages(inputStorage, outputStorage);
 
             //Required for buildings with input
             ConduitConsumer conduitConsumer = go.AddOrGet<ConduitConsumer>();
             BuildingDef def = go.GetComponent<Building>().Def;
-            conduitConsumer.conduitType = def.InputConduitType;
+            conduitConsumer.conduitType = ConduitType.Gas;
+            conduitConsumer.storage = inputStorage;
             conduitConsumer.consumptionRate = 10f;
             conduitConsumer.forceAlwaysSatisfied = true;
-            conduitConsumer.ignoreMinMassCheck = true;
-            conduitConsumer.capacityKG = 10f;
+            conduitConsumer.capacityKG = 30f;
 
-            Storage storage = BuildingTemplates.CreateDefaultStorage(go, false);
-            storage.showDescriptor = true;
-            storage.capacityKg = 10f;
+            //Without this, there wil only be a output image, will not actually output things
+            ConduitDispenser conduitDispenser = go.AddOrGet<ConduitDispenser>();
+            conduitDispenser.conduitType = ConduitType.Liquid;
+            conduitDispenser.storage = outputStorage;
+        }
+
+        public override void DoPostConfigurePreview(BuildingDef def, GameObject go)
+        {
+            GeneratedBuildings.RegisterLogicPorts(go, LogicOperationalController.INPUT_PORTS_1_1);
+        }
+
+        public override void DoPostConfigureUnderConstruction(GameObject go)
+        {
+            GeneratedBuildings.RegisterLogicPorts(go, LogicOperationalController.INPUT_PORTS_1_1);
         }
 
         public override void DoPostConfigureComplete(GameObject go)
         {
-            go.GetComponent<KPrefabID>().prefabSpawnFn += delegate (GameObject game_object)
-            {
-                HandleVector<int>.Handle handle = GameComps.StructureTemperatures.GetHandle(game_object);
-                StructureTemperaturePayload payload = GameComps.StructureTemperatures.GetPayload(handle);
-                int cell = Grid.PosToCell(game_object);
-                GameComps.StructureTemperatures.SetPayload(handle, ref payload);
-            };
+            GeneratedBuildings.RegisterLogicPorts(go, LogicOperationalController.INPUT_PORTS_1_1);
+            go.AddOrGet<LogicOperationalController>();
+            go.AddOrGetDef<PoweredActiveController.Def>();
         }
-        public const string ID = "Condenser";
     }
 }

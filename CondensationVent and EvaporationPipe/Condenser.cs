@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace testing
 {
-    public class Vaporizer : StateMachineComponent<Vaporizer.StatesInstance>
+    public class Condenser : StateMachineComponent<Condenser.StatesInstance>
     {
         //Initialize all the settings of the storages
         public void SetStorages(Storage inputStorage, Storage outputStorage)
@@ -19,20 +19,20 @@ namespace testing
             return this.inputStorage.MassStored() >= 10f && !this.outputStorage.IsFull();
         }
 
-        private void heat(Vaporizer.StatesInstance smi, float dt)
+        private void heat(Condenser.StatesInstance smi, float dt)
         {
             //If there is more than 1 
-            float num = this.heatRate * dt / (float)this.inputStorage.items.Count;
+            float num = this.heatRemovalRate * dt / (float)this.inputStorage.items.Count;
             foreach (GameObject gameObject in this.inputStorage.items)
             {
                 PrimaryElement component = gameObject.GetComponent<PrimaryElement>();
-                targetTemperature = component.Element.highTemp + 20f;
-                GameUtil.DeltaThermalEnergy(component, num, smi.master.targetTemperature);
+                targetTemperature = component.Element.lowTemp - 5f;
+                GameUtil.DeltaThermalEnergy(component, -num, smi.master.targetTemperature);
             }
             for (int i = this.inputStorage.items.Count; i > 0; i--)
             {
                 GameObject gameObject2 = this.inputStorage.items[i - 1];
-                if (gameObject2 && gameObject2.GetComponent<PrimaryElement>().Temperature > gameObject2.GetComponent<PrimaryElement>().Element.highTemp)
+                if (gameObject2 && gameObject2.GetComponent<PrimaryElement>().Temperature < gameObject2.GetComponent<PrimaryElement>().Element.lowTemp)
                 {
                     PrimaryElement component2 = gameObject2.GetComponent<PrimaryElement>();
                     //This code changes the element to the gasous form of the element, above if statement checks whether it should be converted or not
@@ -50,17 +50,15 @@ namespace testing
             base.smi.StartSM();
         }
 
-        public float heatRate = 90f;
+        public float heatRemovalRate = 90f;
         public float targetTemperature;
-        //I guess this thing is readonly by default anyways?
-        private readonly Operational operational;
+        private Operational operational;
         public Storage inputStorage;
         public Storage outputStorage;
 
-
-        public class StatesInstance : GameStateMachine<States, StatesInstance, Vaporizer, object>.GameInstance
+        public class StatesInstance : GameStateMachine<States, StatesInstance, Condenser, object>.GameInstance
         {
-            public StatesInstance(Vaporizer smi) : base(smi)
+            public StatesInstance(Condenser smi) : base(smi)
             {
             }
 
@@ -72,15 +70,16 @@ namespace testing
                     //1. [gameObject] must exist
                     //2. game object must be a gas
                     //3. game object's temperature must be 20C higher than [lowTemp], the consensation temperature of the element
-                    if (gameObject && gameObject.GetComponent<PrimaryElement>().Element.IsGas && gameObject.GetComponent<PrimaryElement>().Temperature > gameObject.GetComponent<PrimaryElement>().Element.lowTemp + 20f)
+                    if (gameObject && gameObject.GetComponent<PrimaryElement>().Element.IsLiquid && gameObject.GetComponent<PrimaryElement>().Temperature < gameObject.GetComponent<PrimaryElement>().Element.highTemp - 5f)
                     {
                         smi.master.inputStorage.Transfer(gameObject, smi.master.outputStorage, false, true);
                     }
                 }
+
             }
         }
 
-        public class States : GameStateMachine<States, StatesInstance, Vaporizer>
+        public class States : GameStateMachine<States, StatesInstance, Condenser>
         {
             public State working;
             public State off;
@@ -92,10 +91,8 @@ namespace testing
                 root
                     //When [GameHashes.OperationalChanged] changes, check [smi]'s [smi.master.operational.IsOperational]
                     //If the value is false, GOTO [.GoTo(off)] state, otherwise, stay.
-                    .EventTransition(GameHashes.OperationalChanged, off, smi => !smi.master.operational);
-
-                    //This is used to output debug logs
-                    //.Enter(delegate (Vaporizer.StatesInstance smi) { Debug.Log(smi.master.operational); })
+                    .EventTransition(GameHashes.OperationalChanged, off, smi => !smi.master.operational)
+                    .Enter(delegate (Condenser.StatesInstance smi) { Debug.Log("ROOT"); });
 
                 off
                     //Play this animation. There are ["on"], ["off"], ["working_loop"], ["working_pst"], ["working_pre"]
@@ -104,7 +101,7 @@ namespace testing
                     .EventTransition(GameHashes.OnStorageChange, working, smi => smi.master.storageCheck())
                     //You can use this to [Debug.Log()], since Enter is used to make a function when variables can only be determined during the game state
                     //By passing nothing to it, it does nothing while still printing things to the [output_log] file.
-                    .Enter(smi => smi.master.operational.SetActive(false, false));
+                    .Enter(delegate (Condenser.StatesInstance smi) { Debug.Log(smi.master.storageCheck()); });
 
                 working
                     //Queue and loop the animation, not sure what that last part is...
@@ -112,8 +109,7 @@ namespace testing
                     //[Update] can do what [EventTransition] does as well, but instead of using [GameHashes] as interrupt, it checks every by 200ms default.
                     //[Update(state?????, action or conditional, rate at which action will be executed)]
                     //The lambda expression has 2 predefined values inside the update function, [state machine instance, smi] and [dt, delta time]
-                    .Update(delegate (Vaporizer.StatesInstance smi, float dt) { smi.master.heat(smi, dt);  smi.changeStorage(); })
-                    .Enter(smi => smi.master.operational.SetActive(true, false))
+                    .Update(delegate (Condenser.StatesInstance smi, float dt) { smi.master.heat(smi, dt); smi.changeStorage(); })
                     //If the [outputStorage] is full OR [inputStorage] is empty, turn off
                     .EventTransition(GameHashes.OnStorageChange, off, smi => !smi.master.storageCheck())
                     .EventTransition(GameHashes.OperationalChanged, off, smi => smi.master.operational);
