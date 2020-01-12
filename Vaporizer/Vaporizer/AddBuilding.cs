@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Database;
 using TUNING;
 
-namespace testing
+namespace Vaporiser
 {
     //THIS CODE IS TAKEN FROM NIGHTINGGALE'S MOD
     public static class AddBuilding
@@ -73,7 +73,7 @@ namespace testing
             }
             IList<string> list3 = BUILDINGS.PLANORDER[categoryIndex].data as IList<string>;
             if (list3 == null) return;
-            
+
             list3.Add(buildingId);
         }
 

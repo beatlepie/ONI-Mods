@@ -1,15 +1,14 @@
-﻿
-namespace testing
+﻿namespace Vaporizer
 {
     //static makes this class non-instanciable
     //this means that this class cannot have functions
     //to acess data inside this class, it must be done this way:
     //[testingModInfo.Version]
-    public static class testingModInfo
+    public static class VaporizerModInfo
     {
-        public static string Name = "State Change Pipes";
-        public static int Version = 5;
-        public static string Date = "2020/01/10";
+        public static string Name = "Vaporizer";
+        public static int Version = 6;
+        public static string Date = "2020/01/12";
         //Version 1 result:
         //MOD does not work; breaks immidiately
         //Version 1 had error: 
@@ -76,6 +75,12 @@ namespace testing
         //The MOD is currently running almost as intended. 
         //Used [stateMachine] to make the building switch between active and inactive.
         //The MOD does not have any "smoothing" animation, but I don't think those are necessary :p
+
+        //Working Version result:
+        //Changed things so that the game removes 0 mass objects
+        //Split the MOD into two
+
+        //The MOD is made from [C# Class Library] with [.Net Framework 3.5]
+        //This requires [0Harmony], [UnityEngine], [Assembly-CSharp], [Assembly-CSharp-Firstpass], [UnityEngine.CoreModule] dll files to be added to work
     }
 }
- 

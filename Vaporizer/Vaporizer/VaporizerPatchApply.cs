@@ -1,10 +1,9 @@
 ﻿using Harmony;
-using STRINGS;
 
-namespace testing
+namespace Vaporiser
 {
     //this function will patch the game to add this [testing] building
-    public static class testingPatchApply
+    public static class VaporizerPatchApply
     {
         //[typeof] gets the type of the (class) while the code is running, "method" of that class to patch
         [HarmonyPatch(typeof(GeneratedBuildings))]
@@ -13,7 +12,6 @@ namespace testing
         {
             public static void Prefix()
             {
-                CondenserConfig.Setup();
                 VaporizerConfig.Setup();
             }
         }
