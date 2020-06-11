@@ -46,6 +46,7 @@ namespace Condenser
             buildingDef.UtilityInputOffset = new CellOffset(0, 0);
             buildingDef.UtilityOutputOffset = new CellOffset(1, 0);
             buildingDef.PowerInputOffset = new CellOffset(1, 0);
+            buildingDef.LogicInputPorts = LogicOperationalController.CreateSingleInputPortList(new CellOffset(1, 1));
             buildingDef.SceneLayer = Grid.SceneLayer.Backwall;
             //adds the output sprite on the building!
             buildingDef.InputConduitType = ConduitType.Gas;
@@ -88,19 +89,12 @@ namespace Condenser
             conduitDispenser.storage = outputStorage;
         }
 
-        public override void DoPostConfigurePreview(BuildingDef def, GameObject go)
-        {
-            GeneratedBuildings.RegisterLogicPorts(go, LogicOperationalController.INPUT_PORTS_1_1);
-        }
+        public override void DoPostConfigurePreview(BuildingDef def, GameObject go) {  }
 
-        public override void DoPostConfigureUnderConstruction(GameObject go)
-        {
-            GeneratedBuildings.RegisterLogicPorts(go, LogicOperationalController.INPUT_PORTS_1_1);
-        }
+        public override void DoPostConfigureUnderConstruction(GameObject go) {  }
 
         public override void DoPostConfigureComplete(GameObject go)
         {
-            GeneratedBuildings.RegisterLogicPorts(go, LogicOperationalController.INPUT_PORTS_1_1);
             go.AddOrGet<LogicOperationalController>();
             go.AddOrGetDef<PoweredActiveController.Def>();
         }

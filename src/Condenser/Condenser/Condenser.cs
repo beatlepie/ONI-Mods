@@ -97,7 +97,7 @@ namespace Condenser
             public State working;
             public State off;
 
-            public override void InitializeStates(out StateMachine.BaseState default_state)
+            public override void InitializeStates(out BaseState default_state)
             {
                 default_state = off;
 

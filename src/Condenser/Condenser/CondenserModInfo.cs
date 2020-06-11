@@ -80,6 +80,11 @@
         //Changed things so that the game removes 0 mass objects
         //Split the MOD into two
 
+        //Version 6:
+        //There was a new patch that changed some of the code for logic and statemachine.
+        //The [.Net Framework] was updated to 4.0
+        //The logic port registering method was altered due to the automation update
+
         //The MOD is made from [C# Class Library] with [.Net Framework 3.5]
         //This requires [0Harmony], [UnityEngine], [Assembly-CSharp], [Assembly-CSharp-Firstpass], [UnityEngine.CoreModule] dll files to be added to work
     }

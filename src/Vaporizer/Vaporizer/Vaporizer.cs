@@ -30,12 +30,21 @@ namespace Vaporiser
             for (int i = this.inputStorage.items.Count; i > 0; i--)
             {
                 GameObject gameObject2 = this.inputStorage.items[i - 1];
+                //1. check if the object actually exists
+                //3. check whether the object is ready to change states or not
                 if (gameObject2 && gameObject2.GetComponent<PrimaryElement>().Temperature > gameObject2.GetComponent<PrimaryElement>().Element.highTemp)
                 {
                     PrimaryElement component2 = gameObject2.GetComponent<PrimaryElement>();
-                    //This code changes the element to the gasous form of the element, above if statement checks whether it should be converted or not
-                    this.inputStorage.AddOre(component2.Element.highTempTransitionTarget, component2.Mass, component2.Temperature, component2.DiseaseIdx, component2.DiseaseCount, false, true);
-
+                    //This will check if the object is polluted water, and produces dirt
+                    if (component2.ElementID == SimHashes.DirtyWater)
+                    {
+                        this.outputStorage.AddOre(SimHashes.Dirt, component2.Mass * 0.0395f, component2.Temperature, component2.DiseaseIdx, component2.DiseaseCount, false, true);
+                        this.outputStorage.AddOre(component2.Element.highTempTransitionTarget, component2.Mass * 0.9605f, component2.Temperature, component2.DiseaseIdx, component2.DiseaseCount, false, true);
+                    }
+                    else
+                        //This code changes the element to the gasous form of the element, above if statement checks whether it should be converted or not
+                        this.inputStorage.AddOre(component2.Element.highTempTransitionTarget, component2.Mass, component2.Temperature, component2.DiseaseIdx, component2.DiseaseCount, false, true);
+                    
                     //This is originally used by [IceMachine] to delete the water, but it kept keeping 0kg masses, so I am replacing it with the 3 lines below
                     //this.inputStorage.ConsumeIgnoringDisease(gameObject2);
 
@@ -84,7 +93,7 @@ namespace Vaporiser
                 {
                     GameObject gameObject = base.smi.master.inputStorage.items[i - 1];
                     //1. [gameObject] must exist
-                    //2. game object must be a gas
+                    //2. game object must be a gas. This conditional is checked as the next conditional takes the [lowTemp] of the [gameObject], which if it is still liquid, it will take the freezing point instead of the vaporizing temperature!
                     //3. game object's temperature must be 20C higher than [lowTemp], the consensation temperature of the element
                     if (gameObject && gameObject.GetComponent<PrimaryElement>().Element.IsGas && gameObject.GetComponent<PrimaryElement>().Temperature > gameObject.GetComponent<PrimaryElement>().Element.lowTemp + 20f)
                         smi.master.inputStorage.Transfer(gameObject, smi.master.outputStorage, false, true);

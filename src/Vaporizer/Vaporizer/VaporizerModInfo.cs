@@ -7,8 +7,8 @@
     public static class VaporizerModInfo
     {
         public static string Name = "Vaporizer";
-        public static int Version = 6;
-        public static string Date = "2020/01/12";
+        public static int Version = 7;
+        public static string Date = "2020/05/07";
         //Version 1 result:
         //MOD does not work; breaks immidiately
         //Version 1 had error: 
@@ -79,8 +79,13 @@
         //Working Version result:
         //Changed things so that the game removes 0 mass objects
         //Split the MOD into two
+        
+        //Version 7: (2020/05/07)
+        //The new patch (automation pack) changed automation logic as well as the [.Net Framework]
+        //Adding a new conditional and element dropper to  account for dirty water converting to water and dirt.
 
         //The MOD is made from [C# Class Library] with [.Net Framework 3.5]
+        //The MOD is changed to [.Net Framework 4.0] with the automation upgrade patch!
         //This requires [0Harmony], [UnityEngine], [Assembly-CSharp], [Assembly-CSharp-Firstpass], [UnityEngine.CoreModule] dll files to be added to work
     }
 }

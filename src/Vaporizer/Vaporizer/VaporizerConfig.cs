@@ -59,6 +59,7 @@ namespace Vaporiser
             buildingDef.UtilityInputOffset = new CellOffset(0, 0);
             buildingDef.UtilityOutputOffset = new CellOffset(1, 0);
             buildingDef.PowerInputOffset = new CellOffset(1, 0);
+            buildingDef.LogicInputPorts = LogicOperationalController.CreateSingleInputPortList(new CellOffset(1, 1));
 
             //Layer the building will be displayed in
             buildingDef.SceneLayer = Grid.SceneLayer.Backwall;
@@ -80,9 +81,10 @@ namespace Vaporiser
             Storage outputStorage = go.AddComponent<Storage>();
             outputStorage.SetDefaultStoredItemModifiers(Storage.StandardInsulatedStorage);
             outputStorage.showInUI = true;
+            outputStorage.allowItemRemoval = true;
             //???????????????????????????????????????????????
             //This seems to be ignored...
-            outputStorage.capacityKg = 30f;
+            //outputStorage.capacityKg = 30f;
 
             Vaporizer vaporizer = go.AddOrGet<Vaporizer>();
             vaporizer.SetStorages(inputStorage, outputStorage);
@@ -104,17 +106,15 @@ namespace Vaporiser
 
         public override void DoPostConfigurePreview(BuildingDef def, GameObject go)
         {
-            GeneratedBuildings.RegisterLogicPorts(go, LogicOperationalController.INPUT_PORTS_1_1);
         }
 
         public override void DoPostConfigureUnderConstruction(GameObject go)
         {
-            GeneratedBuildings.RegisterLogicPorts(go, LogicOperationalController.INPUT_PORTS_1_1);
         }
 
         public override void DoPostConfigureComplete(GameObject go)
         {
-            GeneratedBuildings.RegisterLogicPorts(go, LogicOperationalController.INPUT_PORTS_1_1);
+            go.AddOrGet<LogicOperationalController>();
             go.AddOrGet<LogicOperationalController>();
             go.AddOrGetDef<PoweredActiveController.Def>();
         }
