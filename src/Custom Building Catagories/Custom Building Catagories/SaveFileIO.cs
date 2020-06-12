@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using static Custom_Building_Categories.GameBuildingMenuData;
 using static Custom_Building_Categories.CustomizeBuildingMenuScreen;
-//IBW-493Z.
+
 
 namespace Custom_Building_Categories
 {
