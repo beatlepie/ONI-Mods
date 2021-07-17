@@ -1,14 +1,14 @@
-﻿namespace Vaporizer
+﻿namespace Condenser
 {
     //static makes this class non-instanciable
     //this means that this class cannot have functions
     //to acess data inside this class, it must be done this way:
     //[testingModInfo.Version]
-    public static class VaporizerModInfo
+    public class CondenserModInfo : KMod.UserMod2
     {
-        public static string Name = "Vaporizer";
+        public static string Name = "Condenser";
         public static int Version = 7;
-        public static string Date = "2020/05/07";
+        public static string Date = "2021/07/17";
         //Version 1 result:
         //MOD does not work; breaks immidiately
         //Version 1 had error: 
@@ -75,17 +75,24 @@
         //The MOD is currently running almost as intended. 
         //Used [stateMachine] to make the building switch between active and inactive.
         //The MOD does not have any "smoothing" animation, but I don't think those are necessary :p
-
+        
         //Working Version result:
         //Changed things so that the game removes 0 mass objects
         //Split the MOD into two
-        
-        //Version 7: (2020/05/07)
-        //The new patch (automation pack) changed automation logic as well as the [.Net Framework]
-        //Adding a new conditional and element dropper to  account for dirty water converting to water and dirt.
+
+        //Version 6:
+        //There was a new patch that changed some of the code for logic and statemachine.
+        //The [.Net Framework] was updated to 4.0
+        //The logic port registering method was altered due to the automation update
+
+        //Version 7:
+        //There was a mergedown for the game, DLC and vanilla was updated.
+        //[.Net Framework] was updated to 4.7.1, Harmony was changed to Harmony 2.0!
+        //Had to remove and re-add the references for the Visual Studios to recognize the change!
+        //NightingGale's code broke, attempting to fix!
+        //The code was fixed, it seems that they changed how the tech tree is stored; found the correct location and added the building back!
 
         //The MOD is made from [C# Class Library] with [.Net Framework 3.5]
-        //The MOD is changed to [.Net Framework 4.0] with the automation upgrade patch!
         //This requires [0Harmony], [UnityEngine], [Assembly-CSharp], [Assembly-CSharp-Firstpass], [UnityEngine.CoreModule] dll files to be added to work
     }
 }

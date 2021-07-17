@@ -1,0 +1,56 @@
+﻿using HarmonyLib;
+
+namespace JumpSweepy
+{
+	[HarmonyPatch(typeof(SweepStates), "GetNextCell")]
+	public class PatchGetNextCell
+	{
+		private static bool Prefix(SweepStates.Instance smi, ref int __result)
+		{
+			__result = GetNextCell(smi);
+			// don't run the original function!
+			return false;
+		}
+
+		public static int GetNextCell(SweepStates.Instance smi)
+		{
+			int currentCell = Grid.PosToCell(smi);
+			int result;
+
+			// is the current floor non-existant OR is the sweepy entombed?
+			if (!floorType(Grid.CellBelow(currentCell), currentCell) || Grid.Solid[currentCell])
+				result = Grid.InvalidCell;
+			else
+			{
+				// find the next cell to traverse, based on which direction it was going
+				int nextCell = smi.sm.headingRight.Get(smi) ? Grid.CellRight(currentCell) : Grid.CellLeft(currentCell);
+				// if the next cell is traversable, return [nextCell], otherwise, check next of [nextCell]
+				result = canMoveToCell(smi, nextCell) ? nextCell : Grid.InvalidCell;
+				if (result == Grid.InvalidCell)
+				{
+					nextCell = smi.sm.headingRight.Get(smi) ? Grid.CellRight(nextCell) : Grid.CellLeft(nextCell);
+					result = canMoveToCell(smi, nextCell) ? nextCell : Grid.InvalidCell;
+				}
+			}
+			return result;
+		}
+
+		public static bool canMoveToCell(SweepStates.Instance smi, int cellNext)
+		{
+			bool result;
+			int cellBelowNext = Grid.CellBelow(cellNext);
+
+			// if the next cell or the floor of the next cell is non-existant, return false
+			if (!Grid.IsValidCell(cellNext) || !Grid.IsValidCell(cellBelowNext))
+				result = false;
+			else
+				result = floorType(cellBelowNext, cellNext);
+			return result;
+		}
+
+		private static bool floorType(int floor, int cell)
+		{
+			return Grid.Solid[floor] || Grid.FakeFloor[floor] || Grid.Foundation[floor] || Grid.HasLadder[cell] || Grid.HasPole[cell];
+		}
+	}
+}

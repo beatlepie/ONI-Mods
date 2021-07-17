@@ -95,14 +95,28 @@ namespace Condenser
             return num;
         }
 
-        public static void IntoTechTree(string Tech, string BuildingID)
+        //This part was broken after the mergedown!
+        public static void IntoTechTree(string tech, string BuildingID)
         {
-            //this time, instead of bringing the [IList] with [as] it copies the array
+/*            //this time, instead of bringing the [IList] with [as] it copies the array
             //both methods are valid!
             List<string> list = new List<string>(Techs.TECH_GROUPING[Tech]);
             list.Insert(1, BuildingID);
             //insert the MOD building, then copies it back to the game
             Techs.TECH_GROUPING[Tech] = list.ToArray();
+*/
+
+            //code used to test where and how the building will be added!
+/*            Debug.Log(Db.Get().Techs.Name);
+            foreach (Tech stuff in Db.Get().Techs.resources)
+            {
+                //remember those brackets...
+                Debug.Log(stuff.Id + "     " + (stuff.Id == tech));
+            }
+*/            
+            
+            Tech target = Db.Get().Techs.resources.Find(x => x.Id == tech);
+            target.unlockedItemIDs.Add(BuildingID);
         }
 
         //?????? is this even necessary??????
