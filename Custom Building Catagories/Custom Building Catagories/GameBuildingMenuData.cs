@@ -16,9 +16,9 @@ namespace Custom_Building_Categories
         public struct CategoryData
         {
             public HashedString category;
-            public IList<string> buildings;
+            public List<string> buildings;
 
-            public CategoryData(HashedString category, IList<string> buildings)
+            public CategoryData(HashedString category, List<string> buildings)
             {
                 this.category = category;
                 this.buildings = buildings;

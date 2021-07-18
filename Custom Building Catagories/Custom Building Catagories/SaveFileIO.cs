@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using static Custom_Building_Categories.GameBuildingMenuData;
 using static Custom_Building_Categories.CustomizeBuildingMenuScreen;
-//IBW-493Z.
 
 namespace Custom_Building_Categories
 {
@@ -33,7 +32,7 @@ namespace Custom_Building_Categories
             categoryData = new List<CategoryData>();
             foreach(PlanScreen.PlanInfo plan in categoryMenu)
             {
-                categoryData.Add(new CategoryData(plan.category, plan.data as IList<string>));
+                categoryData.Add(new CategoryData(plan.category, plan.data));
             }
             data = new Data(categoryNames, categoryData, uncategorizedBuildings);
 
@@ -50,6 +49,9 @@ namespace Custom_Building_Categories
         /// </summary>
         public static void Read()
         {
+            if (!File.Exists(GameBuildingMenuData.SAVE_FILE))
+                return;
+
             using (StreamReader file = new StreamReader(SAVE_FILE))
                 data = JsonConvert.DeserializeObject<Data>(file.ReadToEnd());
 
@@ -65,7 +67,7 @@ namespace Custom_Building_Categories
             {
                 if (!iconNameMap.ContainsKey(plan.category))
                 {
-                    Debug.Log("ADDED:" + categoryNames[plan.category.ToString()]);
+                    // Debug.Log("ADDED:" + categoryNames[plan.category.ToString()]);
                     iconNameMap.Add(HashCache.Get().Add(categoryNames[plan.category.ToString()]), "icon_category_base");
                     Strings.Add("STRINGS.UI.BUILDCATEGORIES." + categoryNames[plan.category.ToString()].ToUpper() + ".NAME", categoryNames[plan.category.ToString()]);
                     Strings.Add("STRINGS.UI.BUILDCATEGORIES." + categoryNames[plan.category.ToString()].ToUpper() + ".TOOLTIP", "Customized Building Category!");

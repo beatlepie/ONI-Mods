@@ -4,7 +4,7 @@
 
 namespace Custom_Building_Categories
 {
-    static class Custom_Building_Catagories_ModInfo
+    public class Custom_Building_Catagories_ModInfo : KMod.UserMod2
     {
         public static string Name = "Custom Building Catagories";
         public static int Version = 3;
@@ -81,6 +81,11 @@ namespace Custom_Building_Categories
 
         // ANOTHER POTENTIAL IMPROVEMENT: after looking through NightingGale's [AddBuilding], [categoryIndex = BUILDINGS.PLANORDER.FindIndex((PlanScreen.PlanInfo x) => x.category == category)]
         // can be used to find the index of the category...
+
+        // ********************************************************************************************************************************************************************************
+        // Version 5 (2021/07/17):
+        // There was a mergedown for the game, combining both DLC and vanilla. [Harmony] was updated to [HarmonyLib] (Harmony 2.0), and [.Net Framework] was updated to 4.7.1 from 4.0
+        //
     }
 }
 

@@ -106,7 +106,14 @@ namespace Custom_Building_Categories
                     }
             }
             else
+            {
                 categoryMenu = new List<PlanScreen.PlanInfo>(TUNING.BUILDINGS.PLANORDER);
+                // Is [Spaced Out!] allowed for this account?
+                // If the DLC is not allowed, remove the last item, which is the nuclear buildings tab!
+                if (!DlcManager.IsExpansion1Active())
+                    categoryMenu.RemoveAt(categoryMenu.Count - 1);
+                SaveFileIO.Save();
+            }
         }
 
         public static void OnClicked()
@@ -168,6 +175,7 @@ namespace Custom_Building_Categories
         {
             Initialize();
             InitializeSpecialButtons();
+
 
             for (int i = 0; i < categoryMenu.Count; i++)
             {
@@ -384,6 +392,8 @@ namespace Custom_Building_Categories
                             customizationScreenInstance.DeleteObject();
                             confirmScreenInstance.DeleteObject();
                             addcategoryScreenInstance.DeleteObject();
+                            // Read the save file again so when it is re-opened in the same instance of the game, it can load properly!
+                            SaveFileIO.Read();
                         }
                     });
                     confirmScreen.Body.AddChild(returnClose);

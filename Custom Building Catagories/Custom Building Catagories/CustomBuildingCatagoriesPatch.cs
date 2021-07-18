@@ -1,4 +1,4 @@
-﻿using Harmony;
+﻿using HarmonyLib;
 using System.Collections.Generic;
 using System.IO;
 using TUNING;
@@ -6,18 +6,18 @@ using UnityEngine.Events;
 
 namespace Custom_Building_Categories
 {
-    // EVERYTHING must be public and static, as harmony patch needs to reference and access the files properly
+    // EVERYTHING for Harmony must be public and static, as harmony patch needs to reference and access the files properly
 
     // This is loaded when the mod is loaded at the start of the game
     public static class Start_PLib
     {
         public static void OnLoad()
         {
-            PeterHan.PLib.PUtil.InitLibrary();
-
-            // If the save file exists, run [SaveFileIO.Read()]
-            if (File.Exists(GameBuildingMenuData.SAVE_FILE))
-                SaveFileIO.Read();
+            // This is no longer necessary as [PLib] will automatically instanciate when called upon!
+/*            PeterHan.PLib.PUtil.InitLibrary();
+            PeterHan.PLib.UI.InitLibrary();
+*/
+            SaveFileIO.Read();
             // These must be added in case any swaps change their original names
             GameBuildingMenuData.ADD_STRINGS();
         }
@@ -55,13 +55,4 @@ namespace Custom_Building_Categories
             BUILDINGS.PLANORDER = new List<PlanScreen.PlanInfo>(CustomizeBuildingMenuScreen.categoryMenu);
         }
     }
-
-//    [HarmonyPatch(typeof(CodexEntryGenerator), "GenerateBuildingEntries")]
-//    public static class testing
-//    {
-//        public static void Prefix()
-//        {
-
-//        }
-//    }
 }
