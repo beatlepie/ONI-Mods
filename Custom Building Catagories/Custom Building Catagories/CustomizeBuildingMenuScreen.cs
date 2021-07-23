@@ -41,6 +41,11 @@ namespace Custom_Building_Categories
         static bool runOnlyOnce = true;
 
         /// <summary>
+        /// This was done as changing [PUITuning.Fonts.UILightStyle] could cause issues with other mods that are using PLib!
+        /// </summary>
+        static TextStyleSetting myStyle = PUITuning.Fonts.UILightStyle.DeriveStyle(18);
+
+        /// <summary>
         /// These variable is used multiple times to reference specific, commonly used objects/values
         /// </summary>
         static PButton button;
@@ -159,6 +164,7 @@ namespace Custom_Building_Categories
             // RESET ALL VALUES
             buttons = new List<PButton>();
             status.Text = "";
+            status.TextStyle = myStyle;
             uncategorizedClicked = false;
             buildingSelected = null;
             categorySelected = null;
@@ -181,6 +187,7 @@ namespace Custom_Building_Categories
             {
                 // Make a [PButton] with a name and text
                 buttons.Add(new PButton(categoryMenu[i].category.ToString()));
+                buttons[i].TextStyle = myStyle;
                 buttons[i].FlexSize = new Vector2(10, 10);
                 // [button.OnClick] is a delegate that allows the function/method that gets passed to be executed
                 buttons[i].OnClick = delegate(GameObject button) { CategoryButtonClicked(button.name); };
@@ -198,13 +205,14 @@ namespace Custom_Building_Categories
             categoryScreen.AddChild(removeCategoryButton);
 
             // Setup for [uncategorizedScreen]
-            uncategorizedScreen.AddChild(new PLabel("Uncategorized Buildings") { Text = "Uncategorized Building" });
+            uncategorizedScreen.AddChild(new PLabel("Uncategorized Buildings") { Text = "Uncategorized Building", TextStyle = myStyle });
             foreach (string building in uncategorizedBuildings)
             {
                 BuildingDef def = Assets.GetBuildingDef(building);
                 uncategorizedScreen.AddChild(new PButton(building)
                 {
                     Text = def.Name,
+                    TextStyle = myStyle,
                     FlexSize = new Vector2(10, 10),
                     SpriteSize = new Vector2(40, 40),
                     Sprite = def.GetUISprite("ui", false),
@@ -222,10 +230,12 @@ namespace Custom_Building_Categories
             // Add the save button and close button
             button = new PButton("Instructions");
             button.Text = "Instructions";
+            button.TextStyle = myStyle;
             button.OnClick = Instructions;
             instructDefaultSaveClose.AddChild(button);
             button = new PButton("Default");
             button.Text = "Default";
+            button.TextStyle = myStyle;
             button.OnClick = delegate 
             {
                 // Define a new [PDialog]
@@ -236,7 +246,7 @@ namespace Custom_Building_Categories
                 // This must be initialized otherwise it will not allow the use of the variable
                 GameObject confirmScreenInstance = new GameObject();
 
-                confirmScreen.Body.AddChild(new PLabel("confirm") { Text = "Default will return the settings to normal UNTIL RESTART without erasing the save file." });
+                confirmScreen.Body.AddChild(new PLabel("confirm") { Text = "Default will return the settings to normal UNTIL RESTART without erasing the save file.", TextStyle = myStyle });
 
                 PPanel returnClose = new PPanel("returnClose");
                 returnClose.Direction = PanelDirection.Horizontal;
@@ -245,6 +255,7 @@ namespace Custom_Building_Categories
                 returnClose.AddChild(new PButton("return")
                 {
                     Text = "Return",
+                    TextStyle = myStyle,
                     OnClick = delegate
                     {
                         confirmScreenInstance.DeleteObject();
@@ -253,6 +264,7 @@ namespace Custom_Building_Categories
                 returnClose.AddChild(new PButton("Default")
                 {
                     Text = "Default",
+                    TextStyle = myStyle,
                     OnClick = delegate
                     {
                         customizationScreenInstance.DeleteObject();
@@ -267,6 +279,7 @@ namespace Custom_Building_Categories
                     returnClose.AddChild(new PButton("Revert")
                     {
                         Text = "Revert to Save",
+                        TextStyle = myStyle,
                         OnClick = delegate
                         {
                             customizationScreenInstance.DeleteObject();
@@ -281,6 +294,7 @@ namespace Custom_Building_Categories
                 returnClose.AddChild(new PButton("Delete Save File")
                 {
                     Text = "Delete Save File",
+                    TextStyle = myStyle,
                     OnClick = delegate
                     {
                         customizationScreenInstance.DeleteObject();
@@ -296,10 +310,12 @@ namespace Custom_Building_Categories
             instructDefaultSaveClose.AddChild(button);
             button = new PButton("Save");
             button.Text = "Save";
+            button.TextStyle = myStyle;
             button.OnClick = delegate(GameObject button) { Exit(button.name); }; 
             instructDefaultSaveClose.AddChild(button);
             button = new PButton("Close");
             button.Text = "Close";
+            button.TextStyle = myStyle;
             button.OnClick = delegate (GameObject button) { Exit(button.name); };
             instructDefaultSaveClose.AddChild(button);
 
@@ -332,7 +348,8 @@ namespace Custom_Building_Categories
                 "If you leave buildings in the 'Uncategorized Buildings' they will not show up in the game.\n" +
                 "Currently, all custom category icons are 'Base' icons, and cannot be changed.\n" +
                 "Do not use the same name as other categories or buildings. The game cannot handle duplicates!\n" +
-                "Although settings can be changed mid-game, you must go to main menu and resume the game to change the settings!"
+                "Although settings can be changed mid-game, you must go to main menu and resume the game to change the settings!",
+                TextStyle = myStyle
             });
 
             instructionScreen.Show();
@@ -353,7 +370,7 @@ namespace Custom_Building_Categories
 
                 PDialog saveScreen = new PDialog("saveScreen");
                 saveScreen.Title = "Save Finished!";
-                saveScreen.Body.AddChild(new PLabel("label") { Text = "Please tell me any imporvements or errors you experienced on Steam!\n'" + SAVE_FILE + "' is the location of the save file!" });
+                saveScreen.Body.AddChild(new PLabel("label") { Text = "Please tell me any imporvements or errors you experienced on Steam!\n'" + SAVE_FILE + "' is the location of the save file!", TextStyle = myStyle });
                 saveScreen.Show();
             }
             // If the button's name is close!
@@ -371,7 +388,7 @@ namespace Custom_Building_Categories
                     confirmScreen.Title = "Save before closing!";
                     GameObject confirmScreenInstance = new GameObject();
 
-                    confirmScreen.Body.AddChild(new PLabel("confirm") {Text = "Closing without saving will not conserve the settings!" });
+                    confirmScreen.Body.AddChild(new PLabel("confirm") {Text = "Closing without saving will not conserve the settings!", TextStyle = myStyle });
 
                     PPanel returnClose = new PPanel("returnClose");
                     returnClose.Direction = PanelDirection.Horizontal;
@@ -379,6 +396,7 @@ namespace Custom_Building_Categories
                     returnClose.AddChild(new PButton("return")
                     {
                         Text = "Return",
+                        TextStyle = myStyle,
                         OnClick = delegate
                         {
                             confirmScreenInstance.DeleteObject();
@@ -387,6 +405,7 @@ namespace Custom_Building_Categories
                     returnClose.AddChild(new PButton("close")
                     {
                         Text = "Close",
+                        TextStyle = myStyle,
                         OnClick = delegate
                         {
                             customizationScreenInstance.DeleteObject();
@@ -446,6 +465,7 @@ namespace Custom_Building_Categories
 
                 PLabel categoryName = new PLabel("categoryName");
                 categoryName.Text = categoryNames[button];
+                categoryName.TextStyle = myStyle;
 
                 PGridPanel buildingsGrid = new PGridPanel("buildingsGrid");
                 // This is necessary...for some reason
@@ -472,6 +492,7 @@ namespace Custom_Building_Categories
                                 buildingsGrid.AddChild(new PButton(building)
                                 {
                                     Text = def.Name,
+                                    TextStyle = myStyle,
                                     FlexSize = new Vector2(10, 20),
                                     SpriteSize = new Vector2(40, 40),
                                     Sprite = def.GetUISprite("ui", false),
@@ -565,6 +586,7 @@ namespace Custom_Building_Categories
                                 uncategorizedScreen.AddChild(new PButton(building)
                                 {
                                     Text = def.Name,
+                                    TextStyle = myStyle,
                                     FlexSize = new Vector2(10, 10),
                                     SpriteSize = new Vector2(40, 40),
                                     Sprite = def.GetUISprite("ui", false)
@@ -687,9 +709,9 @@ namespace Custom_Building_Categories
         {
             addCategoriesButton = new PButton("Add");
             addCategoriesButton.Text = "Add Categories...";
+            addCategoriesButton.TextStyle = myStyle;
             addCategoriesButton.FlexSize = new Vector2(20, 40);
-            addCategoriesButton.TextStyle = PUITuning.Fonts.UILightStyle;
-            addCategoriesButton.TextStyle.fontSize = 18;
+            addCategoriesButton.TextStyle = myStyle;
             addCategoriesButton.OnClick = delegate
             {
                 if (relocating && categorySelected != null && categorySelected != "")
@@ -717,6 +739,7 @@ namespace Custom_Building_Categories
                     button = new PButton("Save")
                     {
                         Text = "Save",
+                        TextStyle = myStyle,
                         OnClick = delegate
                         {
                             // Deactivate the [addcategoryScreenInstance]
@@ -760,6 +783,7 @@ namespace Custom_Building_Categories
 
             relocateCategoryButton = new PButton("relocateCategoryButton");
             relocateCategoryButton.Text = "Swap Order";
+            relocateCategoryButton.TextStyle = myStyle;
             relocateCategoryButton.FlexSize = new Vector2(20, 40);
             relocateCategoryButton.OnClick = delegate 
             {
@@ -778,6 +802,7 @@ namespace Custom_Building_Categories
             removeCategoryButton = new PButton("remove")
             {
                 Text = "Remove Category...",
+                TextStyle = myStyle,
                 FlexSize = new Vector2(20, 40),
                 OnClick = delegate 
                 {
