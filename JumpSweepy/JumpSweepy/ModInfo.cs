@@ -49,7 +49,12 @@
          * at Assets.OnPrefabInit () [0x0031c] in <ab4bdc425be2489bb8a9b667082958c0>:0 
          * at KMonoBehaviour.InitializeComponent () [0x00068] in <7888ce3a87c24906b6c550663f653f46>:0 
          * 
+         * Found that this crash was occuring due to not having [ref] in the [__result], which prevented harmony from editing the return.
+         * 
          * 2021/07/15: The mergedown for everyone has occured, Harmony was change to HarmonyLib and other chnages were made as some game data were changed.
+         * 
+         * 2021/07/21: PROBLEM5: I believe I have understood what the [GameNavGrid] code does, however because sweepy uses a separate code for movement,
+         * it seems that editing the [SweepyNavGrid] is not enough. There are significant inconsistancies in the game code for some reason...
          */
     }
 }

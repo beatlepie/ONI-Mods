@@ -25,17 +25,17 @@ namespace JumpSweepy
 				// find the next cell to traverse, based on which direction it was going
 				int nextCell = smi.sm.headingRight.Get(smi) ? Grid.CellRight(currentCell) : Grid.CellLeft(currentCell);
 				// if the next cell is traversable, return [nextCell], otherwise, check next of [nextCell]
-				result = canMoveToCell(smi, nextCell) ? nextCell : Grid.InvalidCell;
+				result = canMoveToCell(nextCell) ? nextCell : Grid.InvalidCell;
 				if (result == Grid.InvalidCell)
 				{
 					nextCell = smi.sm.headingRight.Get(smi) ? Grid.CellRight(nextCell) : Grid.CellLeft(nextCell);
-					result = canMoveToCell(smi, nextCell) ? nextCell : Grid.InvalidCell;
+					result = canMoveToCell(nextCell) ? nextCell : Grid.InvalidCell;
 				}
 			}
 			return result;
 		}
 
-		public static bool canMoveToCell(SweepStates.Instance smi, int cellNext)
+		public static bool canMoveToCell(int cellNext)
 		{
 			bool result;
 			int cellBelowNext = Grid.CellBelow(cellNext);
@@ -48,9 +48,20 @@ namespace JumpSweepy
 			return result;
 		}
 
+		/// <summary>
+		/// 1. Is the [floor] solid? (natural tile, tile)
+		/// 2. Is the [floor] [FakeFloor]? (pitcher pump, open doors)
+		/// 3. Is the [floor] [Foundation]? (uhh...tiles?)
+		/// 4. Does the [cell] have a ladder? (standing IN ladder)
+		/// 5. Does the [cell] have a pole? (standing IN pole)
+		/// 6. Does the [floor] have a ladder? (standing ON ladder)
+		/// </summary>
+		/// <param name="floor"> The cell below the target location </param>
+		/// <param name="cell"> The cell Sweepy will be at </param>
+		/// <returns> Can Sweepy go to the [cell] specified? </returns>
 		private static bool floorType(int floor, int cell)
 		{
-			return Grid.Solid[floor] || Grid.FakeFloor[floor] || Grid.Foundation[floor] || Grid.HasLadder[cell] || Grid.HasPole[cell];
+			return Grid.Solid[floor] || Grid.FakeFloor[floor] || Grid.Foundation[floor] || Grid.HasLadder[cell] || Grid.HasPole[cell] || Grid.HasLadder[floor];
 		}
 	}
 }

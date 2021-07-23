@@ -69,8 +69,6 @@
     <Compile Include="PatchOnSpawn.cs" />
     <Compile Include="PatchTESTING.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SweepyFallMonitor.cs" />
-    <Compile Include="SweepyFallState.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

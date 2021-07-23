@@ -16,6 +16,21 @@ namespace ChooseNeuralVacillator
          * When removing file, remove from *****solution explorer***** as well!
          * 
          * It seems that the [TextStyle] is only initialized at [Build()], which will cause a crash if you modify its values without setting a value to it!
+         * 
+         * ****************************************************************************************************************************************************************************
+         * From Peter Han (peterhaneve#5420) (2021/07/22, 11:54pm, ONI discord): 
+         * Also you changed UILightStyle!
+         * Please do not do this, use PUIUtils.DeriveStyle
+         * You will get away with it if you ilmerge
+         * If you do not ilmerge, you could break other mods
+         * If you ilmerge the assembly, each one gets its own copy, and they will be unaffected
+         * If you do not, any mods that do not merge like so will pull from one copy, which could cause issues
+         * ****************************************************************************************************************************************************************************
+         * From Aze (Aze#0066) (2021/07/22, 11:55pm, ONI discord):
+         * Also, unsolicited suggestion: It looks like your RandomSelected could probably be a Reverse Patch
+         * ****************************************************************************************************************************************************************************
+         * 
+         * I added a [myStyle] for Peter Han's advice, could not figure out how to do [HarmonyReversePatch], but it works so I will leave it be :P
         */
     }
 }

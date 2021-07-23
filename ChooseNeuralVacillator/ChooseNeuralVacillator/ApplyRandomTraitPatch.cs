@@ -13,6 +13,7 @@ namespace ChooseNeuralVacillator
     {
 		// The instance for [SelectWindow] so it can be destroyed later
 		private static GameObject SelectWindowInstance = new GameObject();
+		private static TextStyleSetting myStyle = PUITuning.Fonts.UILightStyle.DeriveStyle(18);
 
 		/// <summary>
 		/// Removes the randomizing component of the Neural Vacillator
@@ -49,8 +50,7 @@ namespace ChooseNeuralVacillator
 			SelectWindow.Body.Spacing = 20;
 			PLabel label = new PLabel("Description");
 			label.Text = $"The duplicant ({worker.GetProperName()}) will recieve: ";
-			label.TextStyle = PUITuning.Fonts.UILightStyle;
-			label.TextStyle.fontSize = 18;
+			label.TextStyle = myStyle;
 			SelectWindow.Body.AddChild(label);
 
 			// Adds all the remaining traits the duplicant can gain with a button each
@@ -59,8 +59,9 @@ namespace ChooseNeuralVacillator
 				SelectWindow.Body.AddChild(new PButton(trait) 
 				{
 					Text = Db.Get().traits.TryGet(trait).Name,
+					TextStyle = myStyle,
 					ToolTip = Db.Get().traits.TryGet(trait).description,
-					FlexSize = new Vector2(20, 40),
+					FlexSize = new Vector2(0.8f, 0.5f),
 					OnClick = delegate (GameObject button) { TraitSelected(worker, ___IsConsumed, ___geneShufflerSMI, button.name); }
 				});
             }
@@ -68,7 +69,8 @@ namespace ChooseNeuralVacillator
 			SelectWindow.Body.AddChild(new PButton("Random")
 			{
 				Text = "random",
-				FlexSize = new Vector2(20, 40),
+				TextStyle = myStyle,
+				FlexSize = new Vector2(0.8f, 1),
 				OnClick = delegate (GameObject button) { RandomSelected(worker, ___IsConsumed, ___geneShufflerSMI, list); }
 			});
 
