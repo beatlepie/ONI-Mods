@@ -31,6 +31,19 @@ namespace ChooseNeuralVacillator
          * ****************************************************************************************************************************************************************************
          * 
          * I added a [myStyle] for Peter Han's advice, could not figure out how to do [HarmonyReversePatch], but it works so I will leave it be :P
-        */
+         * 
+         * There was an issue where the machine will stay in the wrong state after the Neural Vacillation, this seems to have been caused due to the delay
+         * in [SetConsumed], as the state machine seeks to change state immediately after the animation!
+         * SOLUTION1: tried relocating [SetConsumed] so it is executed before building the menu instead of after selecting the trait
+         * Above did not work, though will leave it as it is just in case, as it should not change anything
+         * SOLUTION2: found that [IsConsumed] is public instead of private, Harmony could not find the correct value, and was not altering them
+         * When the value was accessed and changed correctly, it worked!
+         * ****************************************************************************************************************************************************************************
+         * Harmony CANNOT access public values using [___VARIABLE_NAME]!!!!!
+         * ****************************************************************************************************************************************************************************
+         * There still is a bug where trying to use and recharge the vacillator will cause the vacillator to get stuck until reload.
+         * This is fixed by Stock Bug Fix, though I should be able to fix this on my own...right?
+         * I think it can be fixed by forcing the device back to idle state (return to root/default) after delivery is complete?
+         */
     }
 }

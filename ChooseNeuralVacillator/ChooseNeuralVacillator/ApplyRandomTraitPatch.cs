@@ -15,16 +15,16 @@ namespace ChooseNeuralVacillator
 		private static GameObject SelectWindowInstance = new GameObject();
 		private static TextStyleSetting myStyle = PUITuning.Fonts.UILightStyle.DeriveStyle(18);
 
-		/// <summary>
-		/// Removes the randomizing component of the Neural Vacillator
-		/// </summary>
-		/// <param name="worker"> The duplicant using the Neural Vacillator </param>
-		/// <param name="___IsConsumed"> The [bool] indicating the status of whether the [GeneShuffler] can be used or not </param>
-		/// <param name="___geneShufflerSMI"> The instance of [GeneShufflerSM] so it can change state when necessary </param>
-		/// <returns></returns>
-		private static bool Prefix(Worker worker, bool ___IsConsumed, GeneShuffler.GeneShufflerSM.Instance ___geneShufflerSMI)
+        /// <summary>
+        /// Removes the randomizing component of the Neural Vacillator
+        /// </summary>
+        /// <param name="worker"> The duplicant using the Neural Vacillator </param>
+        /// <param name="___IsConsumed"> The [bool] indicating the status of whether the [GeneShuffler] can be used or not </param>
+        /// <param name="___geneShufflerSMI"> The instance of [GeneShufflerSM] so it can change state when necessary </param>
+        /// <returns> Will not run the original code! </returns>
+        private static bool Prefix(Worker worker, bool ___IsConsumed, GeneShuffler.GeneShufflerSM.Instance ___geneShufflerSMI)
         {
-			Traits component = worker.GetComponent<Traits>();
+            Traits component = worker.GetComponent<Traits>();
 			List<string> list = new List<string>();
 
 			// Makes a list of traits the dupicant can get (can't get duplicate traits)
@@ -53,8 +53,11 @@ namespace ChooseNeuralVacillator
 			label.TextStyle = myStyle;
 			SelectWindow.Body.AddChild(label);
 
-			// Adds all the remaining traits the duplicant can gain with a button each
-			foreach(string trait in list)
+            // Moved this here as a potential fix, probably could be moved down
+            SetConsumed(true, ___geneShufflerSMI);
+
+            // Adds all the remaining traits the duplicant can gain with a button each
+            foreach (string trait in list)
             {
 				SelectWindow.Body.AddChild(new PButton(trait) 
 				{
@@ -91,7 +94,6 @@ namespace ChooseNeuralVacillator
 			InfoDialogScreen infoDialogScreen = (InfoDialogScreen)GameScreenManager.Instance.StartScreen(ScreenPrefabs.Instance.InfoDialogScreen.gameObject, GameScreenManager.Instance.ssOverlayCanvas.gameObject, GameScreenManager.UIRenderTarget.ScreenSpaceOverlay);
 			string text = string.Format(UI.GENESHUFFLERMESSAGE.BODY_SUCCESS, worker.GetProperName(), trait.Name, trait.GetTooltip());
 			infoDialogScreen.SetHeader(UI.GENESHUFFLERMESSAGE.HEADER).AddPlainText(text).AddDefaultOK(false);
-			SetConsumed(true, ___IsConsumed, ___geneShufflerSMI);
 
 			SelectWindowInstance.DeleteObject();
 		}
@@ -107,18 +109,18 @@ namespace ChooseNeuralVacillator
 			InfoDialogScreen infoDialogScreen = (InfoDialogScreen)GameScreenManager.Instance.StartScreen(ScreenPrefabs.Instance.InfoDialogScreen.gameObject, GameScreenManager.Instance.ssOverlayCanvas.gameObject, GameScreenManager.UIRenderTarget.ScreenSpaceOverlay);
 			string text = string.Format(UI.GENESHUFFLERMESSAGE.BODY_SUCCESS, worker.GetProperName(), trait.Name, trait.GetTooltip());
 			infoDialogScreen.SetHeader(UI.GENESHUFFLERMESSAGE.HEADER).AddPlainText(text).AddDefaultOK(false);
-			SetConsumed(true, ___IsConsumed, ___geneShufflerSMI);
 
 			SelectWindowInstance.DeleteObject();
 		}
 
 		/// <summary>
-		/// Original code that was present in the game code
+		/// Original code that was present in the game code ([SetConsumed] and [RefreshConsumedState])
+        /// Technically could just use [true] instead of [consumed], kept it in to keep it looking like the original
 		/// </summary>
-		private static void SetConsumed(bool consumed, bool ___IsConsumed, GeneShuffler.GeneShufflerSM.Instance ___geneShufflerSMI)
+		private static void SetConsumed(bool consumed, GeneShuffler.GeneShufflerSM.Instance ___geneShufflerSMI)
         {
-			___IsConsumed = consumed;
-			___geneShufflerSMI.sm.isCharged.Set(!___IsConsumed, ___geneShufflerSMI);
-		}
-	}
+            ___geneShufflerSMI.master.IsConsumed = consumed;
+            ___geneShufflerSMI.sm.isCharged.Set(!___geneShufflerSMI.master.IsConsumed, ___geneShufflerSMI);
+        }
+    }
 }
