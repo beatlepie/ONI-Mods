@@ -92,7 +92,7 @@ namespace Reapy
             navigator.sceneLayer = Grid.SceneLayer.Creatures;
             kprefabID.AddTag(GameTags.Creatures.Walker, false);
             // Did not finish this yet! issue
-            ChoreTable.Builder chore_table = new ChoreTable.Builder().Add(new FallStates.Def(), true, -1).Add(new AnimInterruptStates.Def(), true, -1).Add(new SweepBotTrappedStates.Def(), true, -1).Add(new DeliverToSweepLockerStates.Def(), true, -1).Add(new ReturnToChargeStationStates.Def(), true, -1).Add(new SweepStates.Def(), true, -1).Add(new IdleStates.Def(), true, -1);
+            ChoreTable.Builder chore_table = new ChoreTable.Builder().Add(new FallStates.Def(), true, -1).Add(new AnimInterruptStates.Def(), true, -1).Add(new SweepBotTrappedStates.Def(), true, -1).Add(new DeliverToSweepLockerStates.Def(), true, -1).Add(new ReapyReturnToChargeStationStates.Def(), true, -1).Add(new ReapStates.Def(), true, -1).Add(new IdleStates.Def(), true, -1);
             gameObject.AddOrGet<LoopingSounds>();
             EntityTemplates.AddCreatureBrain(gameObject, chore_table, GameTags.Robots.Models.SweepBot, null);
             return gameObject;

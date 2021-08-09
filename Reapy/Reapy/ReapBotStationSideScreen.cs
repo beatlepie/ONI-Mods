@@ -7,13 +7,13 @@ namespace Reapy
     // Special thanks to [Peterhaneve]() and his [PLib]!
     class ReapBotStationSideScreen : SideScreenContent
     {
-        private SweepBotStation target;
+        private ReapBotStation target;
 
         public override void ClearTarget() => target = null;
 
-        public override string GetTitle() => target.sweepBot == null ? "Reapy Configurator" : target.storedName + "'s Configurator";
+        public override string GetTitle() => target.ReapBot == null ? "Reapy Configurator" : target.storedName + "'s Configurator";
 
-        public override bool IsValidForTarget(GameObject target) => target.GetComponent<SweepBotStation>() != null;
+        public override bool IsValidForTarget(GameObject target) => target.GetComponent<ReapBotStation>() != null;
 
         protected override void OnPrefabInit()
         {

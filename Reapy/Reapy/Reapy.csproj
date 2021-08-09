@@ -73,6 +73,7 @@
     <Compile Include="ReapBotTrappedStates.cs" />
     <Compile Include="ReapStates.cs" />
     <Compile Include="ReapyModInfo.cs" />
+    <Compile Include="ReapyReturnToChargeStationStates.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
