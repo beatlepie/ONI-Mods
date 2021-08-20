@@ -18,6 +18,19 @@
          * 
          * The [ReturnToChargeStationStates] broke as it specifically addresses [SweepBotStation].
          * Changed above to [ReapyReturnToChargeStationStates] to prevent this issue!
+         * 
+         * enum [ObjectLayer] is used to find the pickupable
+         * 
+         * 2021/08/17: removing ReapyNavGrid, it seems too complicated to manipulate sweepy movement...
+         * this means that farms need to be built in a linear fashion...
+         * still using code from [HarvestTool.DragTool]...which seems to be extremely bad...
+         * 
+         * 2021/08/21: Made [harvest1] and [harvest2] where the first does the harvesting animation, harvest2 checks that 
+         * the plant can still be uprooted, and exists (muckroot disappears after dupe uproots first!)
+         * Leaving the tag checking at [TrySweep] because I don't want to compare strings and individual plant products...
+         * Changed [FloorValidator] to [true]!
+         * 
+         * For deubugging uses, get the name from [KSelectable] instead!
          */
     }
 }

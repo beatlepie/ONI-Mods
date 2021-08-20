@@ -70,7 +70,6 @@
     <Compile Include="ReapBotStation.cs" />
     <Compile Include="ReapBotStationConfig.cs" />
     <Compile Include="ReapBotStationSideScreen.cs" />
-    <Compile Include="ReapBotTrappedStates.cs" />
     <Compile Include="ReapStates.cs" />
     <Compile Include="ReapyModInfo.cs" />
     <Compile Include="ReapyReturnToChargeStationStates.cs" />

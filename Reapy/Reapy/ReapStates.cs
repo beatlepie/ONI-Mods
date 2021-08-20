@@ -20,9 +20,8 @@ namespace Reapy
                 }));
             });
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            moving.Enter(delegate (ReapStates.Instance smi)
-            {
-            }).MoveTo((ReapStates.Instance smi) => GetNextCell(smi), pause, redirected, false).Update(delegate (ReapStates.Instance smi, float dt)
+            // Seems like without the [Enter] it stops updating things such as [Navigator]...
+            moving.Enter(delegate (ReapStates.Instance smi) { }).MoveTo((ReapStates.Instance smi) => GetNextCell(smi), pause, redirected, false).Update(delegate (ReapStates.Instance smi, float dt)
             {
                 StorageUnloadMonitor.Instance smi2 = smi.master.gameObject.GetSMI<StorageUnloadMonitor.Instance>();
                 Storage storage = smi2.sm.sweepLocker.Get(smi2);
@@ -35,6 +34,7 @@ namespace Reapy
                     }
                 }
             }, UpdateRate.SIM_1000ms, false);
+
             //TRY:
             //.Enter(delegate (ReapStates.Instance smi){component.GoTo(GetNextCell(smi))})....not sure if this will work though...
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -55,10 +55,21 @@ namespace Reapy
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             redirected.StopMoving().GoTo(emoteRedirected);
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            harvest.PlayAnim("mop_pre", KAnim.PlayMode.Once).QueueAnim("mop_loop", true, null).Enter(delegate (ReapStates.Instance smi)
+            harvest1.PlayAnim("mop_pre", KAnim.PlayMode.Once).QueueAnim("mop_loop").QueueAnim("mop_loop").QueueAnim("mop_loop").QueueAnim("mop_loop").Enter(delegate (ReapStates.Instance smi)
             {
+                // This is made to loop the sweep animation 4 times!
+                // Above was done to "match" the harvesting duration of dupes!
                 StopMoveSound(smi);
-            }).OnAnimQueueComplete(sweep);
+            }).OnAnimQueueComplete(harvest2);
+            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            harvest2.Enter(delegate (ReapStates.Instance smi)
+            {                
+                // checking for [target != null] because if a dupe already harvested muckroot or something it no longer exists
+                // Adding this will hopefully prevent issue where the plant gets harvested beforehand...
+                if (target != null && target.CanBeHarvested)
+                    target.Harvest();
+                smi.GoTo(moving);
+            });
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             sweep.PlayAnim("pickup").ToggleEffect("BotSweeping").Enter(delegate (ReapStates.Instance smi)
             {
@@ -69,7 +80,7 @@ namespace Reapy
             {
                 if (TryHarvest(smi))
                 {
-                    smi.GoTo(harvest);
+                    smi.GoTo(harvest1);
                     return;
                 }
                 if (TrySweep(smi))
@@ -101,20 +112,19 @@ namespace Reapy
         {
             int cell = Grid.PosToCell(smi);
 
-            // This will check current location, and one & two cells above for Arbor Trees or Pincha plants!
-            foreach (int fruit in new int[] { cell, Grid.CellAbove(cell), Grid.CellAbove(Grid.CellAbove(cell)) }){
-                // [Grid.Objects[cell, 5]] is the [Plants] layer!
-                GameObject gameObject = Grid.Objects[cell, 5];
-
-                // removing  gameObject.GetComponent<Harvestable>() != null &&
-                if (gameObject != null && gameObject.GetComponent<Harvestable>().CanBeHarvested)
+            // Found this piece from [HarvestTool.OnDragTool]!
+            // This works...but seems too extensive to find one plant...
+            foreach (HarvestDesignatable harvestDesignatable in Components.HarvestDesignatables.Items)
+            {
+                // This will check current location, and one & two cells above for Arbor Trees or Pincha plants!
+                // This checks whether the plant is fully grown or not!
+                if (harvestDesignatable.GetComponent<Harvestable>().CanBeHarvested &&
+                    (Grid.PosToCell(harvestDesignatable) == cell || 
+                    Grid.PosToCell(harvestDesignatable) == Grid.CellAbove(cell) || 
+                    Grid.PosToCell(harvestDesignatable) == Grid.CellAbove(Grid.CellAbove(cell))))
                 {
-                    Debug.Log("Harvesting???");
-                    Debug.Log(gameObject);
-
-                    // This will drop the produce after harvest, so [TrySweep] the produce after harvest!
-                    gameObject.GetComponent<Harvestable>().Harvest();
-                    TrySweep(smi);
+                    // This will drop the produce on the ground!
+                    target = harvestDesignatable.GetComponent<Harvestable>();
                     return true;
                 }
             }
@@ -130,14 +140,17 @@ namespace Reapy
             if (gameObject != null)
             {
                 ObjectLayerListItem nextItem = gameObject.GetComponent<Pickupable>().objectLayerListItem.nextItem;
-                if (nextItem != null && nextItem.gameObject.HasAnyTags(new Tag[] { GameTags.CookingIngredient, GameTags.IndustrialIngredient, GameTags.Edible }))
+                //Debug.Log("HERE");
+                while (nextItem != null)
                 {
-                    Debug.Log("reached!!!!!");
-                    Debug.Log(nextItem.gameObject.GetComponent<KSelectable>().GetProperName());
-                    Debug.Log(nextItem.gameObject.GetComponent<KSelectable>().name);
-
-                    TryStore(nextItem.gameObject, smi);
-                    return true;
+                    // Apparently this can also detect liquids and dupes...
+                    //Debug.Log(nextItem.gameObject.GetComponent<KSelectable>().name);
+                    if (nextItem.gameObject.HasAnyTags(new Tag[] { GameTags.CookingIngredient, GameTags.IndustrialIngredient, GameTags.Edible }))
+                    {
+                        TryStore(nextItem.gameObject, smi);
+                        return true;
+                    }
+                    nextItem = nextItem.nextItem;
                 }
             }
             return false;
@@ -181,32 +194,39 @@ namespace Reapy
 
         public int GetNextCell(ReapStates.Instance smi)
         {
-            int i = 0;
-            int num = Grid.PosToCell(smi);
-            int num2 = Grid.InvalidCell;
-            if (!Grid.Solid[Grid.CellBelow(num)])
+            int currentCell = Grid.PosToCell(smi);
+            int result;
+
+            // is the current floor non-existant OR is the sweepy entombed?
+            if (!Grid.Solid[Grid.CellBelow(currentCell)] || Grid.Solid[currentCell])
+                result = Grid.InvalidCell;
+            else
             {
-                return Grid.InvalidCell;
+                // find the next cell to traverse, based on which direction it was going
+                int nextCell = smi.sm.headingRight.Get(smi) ? Grid.CellRight(currentCell) : Grid.CellLeft(currentCell);
+                // if the next cell is traversable, return [nextCell], otherwise, check next of [nextCell]
+                result = canMoveToCell(nextCell) ? nextCell : Grid.InvalidCell;
+                // This code was used to check if reapy can jump one tile, but will not be used
+                //if (result == Grid.InvalidCell)
+                //{
+                //    nextCell = smi.sm.headingRight.Get(smi) ? Grid.CellRight(nextCell) : Grid.CellLeft(nextCell);
+                //    result = canMoveToCell(nextCell) ? nextCell : Grid.InvalidCell;
+                //}
             }
-            if (Grid.Solid[num])
-            {
-                return Grid.InvalidCell;
-            }
-            while (i < 1)
-            {
-                num2 = (smi.sm.headingRight.Get(smi) ? Grid.CellRight(num) : Grid.CellLeft(num));
-                if (!Grid.IsValidCell(num2) || Grid.Solid[num2] || !Grid.IsValidCell(Grid.CellBelow(num2)) || !Grid.Solid[Grid.CellBelow(num2)])
-                {
-                    break;
-                }
-                num = num2;
-                i++;
-            }
-            if (num == Grid.PosToCell(smi))
-            {
-                return Grid.InvalidCell;
-            }
-            return num;
+            return result;
+        }
+
+        public static bool canMoveToCell(int cellNext)
+        {
+            bool result;
+            int cellBelowNext = Grid.CellBelow(cellNext);
+
+            // if the next cell or the floor of the next cell is non-existant, return false
+            if (!Grid.IsValidCell(cellNext) || !Grid.IsValidCell(cellBelowNext))
+                result = false;
+            else
+                result = Grid.Solid[cellBelowNext];
+            return result;
         }
 
         public const string MOVE_LOOP_SOUND = "SweepBot_mvmt_lp";
@@ -216,9 +236,13 @@ namespace Reapy
         private GameStateMachine<ReapStates, ReapStates.Instance, IStateMachineTarget, ReapStates.Def>.State moving;
         private GameStateMachine<ReapStates, ReapStates.Instance, IStateMachineTarget, ReapStates.Def>.State redirected;
         private GameStateMachine<ReapStates, ReapStates.Instance, IStateMachineTarget, ReapStates.Def>.State emoteRedirected;
-        private GameStateMachine<ReapStates, ReapStates.Instance, IStateMachineTarget, ReapStates.Def>.State harvest;
+        private GameStateMachine<ReapStates, ReapStates.Instance, IStateMachineTarget, ReapStates.Def>.State harvest1;
+        private GameStateMachine<ReapStates, ReapStates.Instance, IStateMachineTarget, ReapStates.Def>.State harvest2;
         private GameStateMachine<ReapStates, ReapStates.Instance, IStateMachineTarget, ReapStates.Def>.State sweep;
         private GameStateMachine<ReapStates, ReapStates.Instance, IStateMachineTarget, ReapStates.Def>.State pause;
+
+        private Harvestable target = null;
+
         public class Def : StateMachine.BaseDef
         {
         }

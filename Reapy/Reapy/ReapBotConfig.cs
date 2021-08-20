@@ -23,10 +23,6 @@ namespace Reapy
             gameObject.AddOrGet<LoopingSounds>();
             // Used for anything that requires animation of the object
             gameObject.GetComponent<KBatchedAnimController>().isMovable = true;
-
-            //gameObject.GetComponent<KBatchedAnimController>().TintColour = new Color32(50, 250, 50, byte.MaxValue);
-            //gameObject.GetComponent<KAnimControllerBase>().TintColour = new Color32(50, 250, 50, byte.MaxValue);
-
             // Used to identify and differentiate the object...?
             KPrefabID kprefabID = gameObject.AddOrGet<KPrefabID>();
             kprefabID.AddTag(GameTags.Creature, false);
@@ -41,7 +37,7 @@ namespace Reapy
             trait.Add(new AttributeModifier(Db.Get().Amounts.InternalBattery.deltaAttribute.Id, -17.1428566f, name, false, false, true));
 
             Modifiers modifiers = gameObject.AddOrGet<Modifiers>();
-            modifiers.initialTraits.Add("SweepBotBaseTrait");
+            modifiers.initialTraits.Add("ReapBotBaseTrait");
             modifiers.initialAmounts.Add(Db.Get().Amounts.HitPoints.Id);
             modifiers.initialAmounts.Add(Db.Get().Amounts.InternalBattery.Id);
 
@@ -61,17 +57,21 @@ namespace Reapy
             gameObject.AddOrGetDef<CreatureFallMonitor.Def>();
             gameObject.AddOrGetDef<SweepBotTrappedMonitor.Def>();
             gameObject.AddOrGet<AnimEventHandler>();
-            gameObject.AddOrGet<SnapOn>().snapPoints = new List<SnapOn.SnapPoint>(new SnapOn.SnapPoint[]
-            {
-            new SnapOn.SnapPoint
-            {
-                pointName = "carry",
-                automatic = false,
-                context = "",
-                buildFile = null,
-                overrideSymbol = "snapTo_ornament"
-            }
-            });
+
+            // This seems to be the location where the item needs to go!
+            // when this is left as it is, it seems to cause a "red dot" on reapy
+            //gameObject.AddOrGet<SnapOn>().snapPoints = new List<SnapOn.SnapPoint>(new SnapOn.SnapPoint[]
+            //{
+            //new SnapOn.SnapPoint
+            //{
+            //    pointName = "carry",
+            //    automatic = false,
+            //    context = "",
+            //    buildFile = null,
+            //    overrideSymbol = "snapTo_ornament"
+            //}
+            //});
+
             SymbolOverrideControllerUtil.AddToPrefab(gameObject);
             gameObject.AddComponent<Storage>();
             gameObject.AddComponent<Storage>().capacityKg = 500f;
@@ -116,7 +116,12 @@ namespace Reapy
             smi.sm.internalStorage.Set(inst.GetComponents<Storage>()[1], smi);
             inst.GetSMI<CreatureFallMonitor.Instance>().anim = "idle_loop";
 
-            // Add doortransitionlayer thingy afterwards?
+            // Get its naviator and add a transition layer, this allows them to go through doors
+            if (inst != null)
+            {
+                Navigator navigator = inst.AddOrGet<Navigator>();
+                navigator.transitionDriver.overrideLayers.Add(new DoorTransitionLayer(navigator));
+            }
 
             inst.GetComponent<KAnimControllerBase>().TintColour = new Color32(50, 250, 50, byte.MaxValue);
         }
