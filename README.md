@@ -10,13 +10,14 @@ All mods updated to work at <b>469369</b>
 The mods can be downloaded at the Steam Workshop. They seem to have fixed their mod loader and now updates properly!
 
 ## List of Mods
-|**Mod Name**|**Description**|**Steam Link**|
-| :--------: | :-----------: | :----------: |
-|**Condenser**|Add a building that condenses gas into liquid!|[click](https://steamcommunity.com/sharedfiles/filedetails/?id=1848839827)|
-|**Vaporizer**|Add a building that vaporizes liquid to gas!|[click](https://steamcommunity.com/sharedfiles/filedetails/?id=1967660729)|
-|**Customize Building Categories**|Change the building menu to fit your needs!|[click](https://steamcommunity.com/sharedfiles/filedetails/?id=1848839827)|
-|**JumpSweepy**|Not completed|[click]()|
-|**ChooseNeuralVacillator**|Allows you to choose the trait from the Neural Vacillator!|[click](https://steamcommunity.com/sharedfiles/filedetails/?id=2554708805)|
+|**Mod Name**|**Description**|
+| :--------: | :-----------: |
+|[**Condenser**](https://steamcommunity.com/sharedfiles/filedetails/?id=1848839827)|Add a building that condenses gas into liquid!|
+|[**Vaporizer**](https://steamcommunity.com/sharedfiles/filedetails/?id=1967660729)|Add a building that vaporizes liquid to gas!|
+|[**Customize Building Categories**](https://steamcommunity.com/sharedfiles/filedetails/?id=1848839827)|Change the building menu to fit your needs!|
+|**JumpSweepy**|Not completed|
+|[**ChooseNeuralVacillator**](https://steamcommunity.com/sharedfiles/filedetails/?id=2554708805)|Allows you to choose the trait from the Neural Vacillator!|
+|[**Reapy (Harvester)**](https://steamcommunity.com/sharedfiles/filedetails/?id=2580218892)| Automatic farming robot for automatic farms! |
 
 All the mods are compatable with DLC and Vanilla!
 
