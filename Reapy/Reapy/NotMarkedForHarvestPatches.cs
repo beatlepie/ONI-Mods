@@ -106,10 +106,6 @@ namespace Reapy
                     }
                 }
             }
-            foreach(var q in codes)
-            {
-                Debug.Log(q);
-            }
 
             return codes;
         }
