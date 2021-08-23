@@ -39,6 +39,9 @@
     <Reference Include="Assembly-CSharp-firstpass">
       <HintPath>C:\Program Files (x86)\Steam\steamapps\common\OxygenNotIncluded\OxygenNotIncluded_Data\Managed\Assembly-CSharp-firstpass.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.13.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="PLib, Version=4.4.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\PLib.4.4.0\lib\net471\PLib.dll</HintPath>
     </Reference>
@@ -65,6 +68,7 @@
     <Compile Include="AddBuilding.cs" />
     <Compile Include="PatchGameNavGrids.cs" />
     <Compile Include="PatchOnSpawn.cs" />
+    <Compile Include="NotMarkedForHarvestPatches.cs" />
     <Compile Include="ReapBotConfig.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ReapBotStation.cs" />
@@ -72,9 +76,11 @@
     <Compile Include="ReapBotStationSideScreen.cs" />
     <Compile Include="ReapStates.cs" />
     <Compile Include="ReapyModInfo.cs" />
+    <Compile Include="ReapyOptions.cs" />
     <Compile Include="ReapyReturnToChargeStationStates.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

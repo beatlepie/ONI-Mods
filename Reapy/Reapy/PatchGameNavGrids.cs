@@ -6,6 +6,10 @@ namespace Reapy
     [HarmonyPatch(typeof(GameNavGrids), "CreateWalkerBabyNavigation")]
     public class PatchGameNavGrids
     {
+		/// <summary>
+		/// This changes the [FloorValidator] from [false] to [true].
+		/// All other methods in this file is the same as the game!
+		/// </summary>
         private static void Postfix(Pathfinding pathfinding, CellOffset[] bounding_offsets)
         {
 			NavGrid.Transition[] transitions = new NavGrid.Transition[]

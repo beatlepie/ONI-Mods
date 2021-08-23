@@ -114,17 +114,17 @@ namespace Reapy
 
             // Found this piece from [HarvestTool.OnDragTool]!
             // This works...but seems too extensive to find one plant...
-            foreach (HarvestDesignatable harvestDesignatable in Components.HarvestDesignatables.Items)
+            foreach (Harvestable harvestable in Components.Harvestables.Items)
             {
                 // This will check current location, and one & two cells above for Arbor Trees or Pincha plants!
                 // This checks whether the plant is fully grown or not!
-                if (harvestDesignatable.GetComponent<Harvestable>().CanBeHarvested &&
-                    (Grid.PosToCell(harvestDesignatable) == cell || 
-                    Grid.PosToCell(harvestDesignatable) == Grid.CellAbove(cell) || 
-                    Grid.PosToCell(harvestDesignatable) == Grid.CellAbove(Grid.CellAbove(cell))))
+                if (harvestable.CanBeHarvested &&
+                    (Grid.PosToCell(harvestable) == cell || 
+                    Grid.PosToCell(harvestable) == Grid.CellAbove(cell) || 
+                    Grid.PosToCell(harvestable) == Grid.CellAbove(Grid.CellAbove(cell))))
                 {
                     // This will drop the produce on the ground!
-                    target = harvestDesignatable.GetComponent<Harvestable>();
+                    target = harvestable;
                     return true;
                 }
             }
@@ -177,18 +177,11 @@ namespace Reapy
                 // [go.GetAmounts()] does not exist!
                 // [go.GetProperName()] or [go.name] does not exist!
 
-                if (pickupable.TotalAmount > 10f)
-                {
-                    pickupable.GetComponent<EntitySplitter>();
-                    pickupable = EntitySplitter.Split(pickupable, Mathf.Min(10f, storage.RemainingCapacity()), null);
-                    smi.gameObject.GetAmounts().GetValue(Db.Get().Amounts.InternalBattery.Id);
-                    storage.Store(pickupable.gameObject, false, false, true, false);
-                }
-                else
-                {
-                    smi.gameObject.GetAmounts().GetValue(Db.Get().Amounts.InternalBattery.Id);
-                    storage.Store(pickupable.gameObject, false, false, true, false);
-                }
+                // Removing pick-up limit from 10units to as much as the storage allows!
+                pickupable.GetComponent<EntitySplitter>();
+                pickupable = EntitySplitter.Split(pickupable, Mathf.Min(pickupable.TotalAmount, storage.RemainingCapacity()), null);
+                smi.gameObject.GetAmounts().GetValue(Db.Get().Amounts.InternalBattery.Id);
+                storage.Store(pickupable.gameObject, false, false, true, false);
             }
         }
 
