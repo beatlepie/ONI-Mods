@@ -22,9 +22,25 @@ namespace Reapy
         [JsonProperty]
         public bool warningsOff { get; set; }
 
+        [Option("How far above Reapy should it harvest? (Blocked by tiles!)")]
+        [JsonProperty]
+        public int harvestRange { get; set; }
+
+        [Option("How far should Reapy be allowed to go?")]
+        [JsonProperty]
+        public int leashRange { get; set; }
+
+        [Option("How fast should Reapy move?")]
+        [JsonProperty]
+        public float speed { get; set; }
+
+
         public ReapyOptions()
         {
             warningsOff = false;
+            harvestRange = 3;
+            leashRange = 32;
+            speed = 1;
         }
     }
 }

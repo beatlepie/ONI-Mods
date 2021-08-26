@@ -68,6 +68,8 @@ namespace Reapy
          * 
          * Adding [ReapyOptions] and [Onload] for harmony for the above setting!
          * For [OnLoad], [public override void OnLoad(Harmony harmony)] is necessary, and must be placed under [KMod.UserMod2] inheriting class!
+         * 
+         * 2021/08/26: Found that there was a [Grid.HasDoor] option...now does not get stuck on doors!
          */
     }
 }

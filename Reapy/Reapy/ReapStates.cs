@@ -116,16 +116,24 @@ namespace Reapy
             // This works...but seems too extensive to find one plant...
             foreach (Harvestable harvestable in Components.Harvestables.Items)
             {
-                // This will check current location, and one & two cells above for Arbor Trees or Pincha plants!
+                // This will check current location, and one & two cells above BY DEFAULT for Arbor Trees or Pincha plants!
                 // This checks whether the plant is fully grown or not!
-                if (harvestable.CanBeHarvested &&
-                    (Grid.PosToCell(harvestable) == cell || 
-                    Grid.PosToCell(harvestable) == Grid.CellAbove(cell) || 
-                    Grid.PosToCell(harvestable) == Grid.CellAbove(Grid.CellAbove(cell))))
+                if (harvestable.CanBeHarvested)
                 {
-                    // This will drop the produce on the ground!
-                    target = harvestable;
-                    return true;
+                    for(int _ = 0; _ < ReapyOptions.Options.harvestRange; _++)
+                    {
+                        if(Grid.PosToCell(harvestable) == cell)
+                        {
+                            target = harvestable;
+                            return true;
+                        }
+
+                        // Check one cell above until harvest range is reached!
+                        cell = Grid.CellAbove(cell);
+                        // If the above block is solid, stop checking!
+                        if (Grid.Solid[cell])
+                            break;
+                    }
                 }
             }
             return false;
@@ -190,8 +198,10 @@ namespace Reapy
             int currentCell = Grid.PosToCell(smi);
             int result;
 
-            // is the current floor non-existant OR is the sweepy entombed?
-            if (!Grid.Solid[Grid.CellBelow(currentCell)] || Grid.Solid[currentCell])
+            // 1. If the groud is not solid, INVALID (1 and 2 used De Morgan's laws)
+            // 2. If a door is located on the cell, NOT INVALID
+            // 3. If it is entomed, INVALID
+            if (!Grid.Solid[Grid.CellBelow(currentCell)] || (!Grid.HasDoor[currentCell] && Grid.Solid[currentCell]))
                 result = Grid.InvalidCell;
             else
             {

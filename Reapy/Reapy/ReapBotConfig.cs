@@ -86,9 +86,9 @@ namespace Reapy
             Navigator navigator = gameObject.AddOrGet<Navigator>();
             navigator.NavGridName = "ReapyNavGrid";
             navigator.CurrentNavType = NavType.Floor;
-            navigator.defaultSpeed = 1f;
+            navigator.defaultSpeed = ReapyOptions.Options.speed;
             navigator.updateProber = true;
-            navigator.maxProbingRadius = 32;
+            navigator.maxProbingRadius = ReapyOptions.Options.leashRange;
             navigator.sceneLayer = Grid.SceneLayer.Creatures;
             kprefabID.AddTag(GameTags.Creatures.Walker, false);
             // Did not finish this yet! issue

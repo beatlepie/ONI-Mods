@@ -29,7 +29,7 @@ namespace Reapy
 			{
 				// This must be true for Reapy to pass doors! Thank you to [Romen] for finding that!
 				new GameNavGrids.FloorValidator(true)
-			}, 2, 3, array.Length);
+			}, 2, 0, array.Length);
 			pathfinding.AddNavGrid(navGrid);
 		}
 
