@@ -120,18 +120,19 @@ namespace Reapy
                 // This checks whether the plant is fully grown or not!
                 if (harvestable.CanBeHarvested)
                 {
+                    int location = cell;
                     for(int _ = 0; _ < ReapyOptions.Options.harvestRange; _++)
                     {
-                        if(Grid.PosToCell(harvestable) == cell)
+                        if(Grid.PosToCell(harvestable) == location)
                         {
                             target = harvestable;
                             return true;
                         }
 
                         // Check one cell above until harvest range is reached!
-                        cell = Grid.CellAbove(cell);
+                        location = Grid.CellAbove(location);
                         // If the above block is solid, stop checking!
-                        if (Grid.Solid[cell])
+                        if (Grid.Solid[location])
                             break;
                     }
                 }
